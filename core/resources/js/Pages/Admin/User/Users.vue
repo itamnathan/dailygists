@@ -1,0 +1,457 @@
+<script setup>
+import AdminLayout from "@/Layouts/AdminLayout.vue";
+import Ago from "@/Components/Ago.vue";
+import Pagination from "@/Components/Pagination.vue";
+
+import { useForm, Link, usePage } from "@inertiajs/inertia-vue3";
+import { ref, onMounted, reactive, computed, onBeforeMount } from "vue";
+
+import { defineAsyncComponent } from "vue";
+
+import { useToggle } from "@vueuse/shared";
+
+const DialogModal = defineAsyncComponent(() =>
+  import("@/Components/DialogModal.vue")
+);
+const deletinguser = ref(false);
+const toggledeletinguser = useToggle(deletinguser);
+const users = computed(() => usePage().props.value.users);
+</script>
+        
+<template>
+  <AdminLayout>
+    <div class="container mx-auto px-4 pt-6">
+      <div class="border-b border-gray-200">
+        <div class="sm:flex sm:justify-between sm:items-baseline">
+          <div class="sm:flex sm:justify-between sm:items-baseline">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Users</h3>
+          </div>
+
+          <div class="mt-3 sm:mt-0 sm:ml-4">
+            <form action="{{ $query }}" method="GET">
+              <label for="adminSearch" class="sr-only">Search</label>
+
+              <div class="flex rounded-md shadow-sm">
+                <div class="relative grow">
+                  <div
+                    class="
+                      absolute
+                      inset-y-0
+                      left-0
+                      pl-3
+                      flex
+                      items-center
+                      pointer-events-none
+                    "
+                  >
+                    <x-heroicon-s-magnifying-glass
+                      class="h-5 w-5 text-gray-400"
+                    />
+                  </div>
+
+                  <input
+                    type="search"
+                    name="admin_search"
+                    id="adminSearch"
+                    placeholder="{{ $placeholder }}"
+                    value="{{ $search ?? null }}"
+                    class="
+                      focus:ring-lio-500 focus:border-lio-500
+                      w-full
+                      rounded-md
+                      pl-10
+                      block
+                      text-sm
+                      border-gray-300
+                    "
+                  />
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main class="container mx-auto pb-10 lg:py-6 sm:px-4">
+      <div class="flex flex-col">
+        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+          <div
+            class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"
+          >
+            <div
+              class="
+                shadow
+                overflow-hidden
+                border-b border-gray-200
+                sm:rounded-lg
+              "
+            >
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th
+                      scope="col"
+                      class="
+                        px-6
+                        py-3
+                        text-left text-xs
+                        font-medium
+                        text-gray-500
+                        uppercase
+                        tracking-wider
+                      "
+                    >
+                      Name
+                    </th>
+                    <th
+                      scope="col"
+                      class="
+                        px-6
+                        py-3
+                        text-left text-xs
+                        font-medium
+                        text-gray-500
+                        uppercase
+                        tracking-wider
+                      "
+                    >
+                      Role
+                    </th>
+                    <th
+                      scope="col"
+                      class="
+                        px-6
+                        py-3
+                        text-left text-xs
+                        font-medium
+                        text-gray-500
+                        uppercase
+                        tracking-wider
+                      "
+                    >
+                      Joined On
+                    </th>
+                    <th
+                      scope="col"
+                      class="
+                        px-6
+                        py-3
+                        text-left text-xs
+                        font-medium
+                        text-gray-500
+                        uppercase
+                        tracking-wider
+                      "
+                    >
+                      Profile
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="user in users.data" :key="user.id">
+                    <td class="px-6 py-4 text-gray-500 text-sm">
+                      <div class="flex items-center">
+                        <div class="shrink-0 h-10 w-10">
+                          <img
+                            :src="user.profile_photo_url"
+                            class="h-10 w-10 rounded-full"
+                          />
+                        </div>
+
+                        <div class="ml-4">
+                          <div class="text-sm font-medium text-gray-900">
+                            <Link :href="route('profile', user.username)">
+                              {{ user.name }}
+                            </Link>
+                          </div>
+
+                          <div class="text-sm text-gray-500">
+                            <Link :href="route('profile', user.username)">
+                              {{ user.username }}
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td class="flex space-x-2 px-6 py-4 text-gray-500 text-sm">
+                      <span
+                        class="
+                          inline-flex
+                          items-center
+                          px-2.5
+                          py-0.5
+                          rounded-full
+                          text-xs
+                          font-medium
+                          bg-red-100
+                          text-gray-800
+                        "
+                        v-if="user.banned_at"
+                        >banned</span
+                      >
+                      <span
+                        class="
+                          inline-flex
+                          items-center
+                          px-2.5
+                          py-0.5
+                          rounded-full
+                          text-xs
+                          font-medium
+                          bg-gray-100
+                          text-gray-800
+                        "
+                        v-if="user.type == 1"
+                        >default</span
+                      >
+                      <span
+                        class="
+                          inline-flex
+                          items-center
+                          px-2.5
+                          py-0.5
+                          rounded-full
+                          text-xs
+                          font-medium
+                          bg-gray-100
+                          text-gray-800
+                        "
+                        v-if="user.type == 2"
+                        >reader</span
+                      >
+                      <span
+                        class="
+                          inline-flex
+                          items-center
+                          px-2.5
+                          py-0.5
+                          rounded-full
+                          text-xs
+                          font-medium
+                          bg-gray-100
+                          text-gray-800
+                        "
+                        v-if="user.type == 3"
+                        >writer</span
+                      >
+                      <span
+                        class="
+                          inline-flex
+                          items-center
+                          px-2.5
+                          py-0.5
+                          rounded-full
+                          text-xs
+                          font-medium
+                          bg-gray-100
+                          text-gray-800
+                        "
+                        v-if="user.type == 4"
+                        >moderator</span
+                      >
+                      <span
+                        class="
+                          inline-flex
+                          items-center
+                          px-2.5
+                          py-0.5
+                          rounded-full
+                          text-xs
+                          font-medium
+                          bg-gray-100
+                          text-gray-800
+                        "
+                        v-if="user.type == 5"
+                        >editor</span
+                      >
+                      <span
+                        class="
+                          inline-flex
+                          items-center
+                          px-2.5
+                          py-0.5
+                          rounded-full
+                          text-xs
+                          font-medium
+                          bg-gray-100
+                          text-gray-800
+                        "
+                        v-if="user.type == 6"
+                        >supervisor</span
+                      >
+                      <span
+                        class="
+                          inline-flex
+                          items-center
+                          px-2.5
+                          py-0.5
+                          rounded-full
+                          text-xs
+                          font-medium
+                          bg-gray-100
+                          text-gray-800
+                        "
+                        v-if="user.type == 7"
+                        >admin</span
+                      >
+                    </td>
+
+                    <td class="px-6 py-4 text-gray-500 text-sm">
+                      <ago
+                        :datess="user.created_at"
+                        classes=" text-sm  text-grey-dark"
+                        befor=""
+                      ></ago>
+                    </td>
+
+                    <td class="flex space-x-4 px-6 py-4 text-gray-500 text-sm">
+                      <Link
+                      :href="route('backend.user.users.edit', user.username)"
+                        class="text-lio-600 hover:text-lio-800"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="w-6 h-6"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                          />
+                        </svg>
+                      </Link>
+                      <Link
+                        :href="route('profile', user.username)"
+                        class="text-lio-600 hover:text-lio-800"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke="currentColor"
+                          class="w-6 h-6"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                          />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </Link>
+
+                      <button
+                        @click="toggledeletinguser()"
+                        class="text-red-600 hover:text-red-800"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          class="w-6 h-6"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z"
+                            clip-rule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                      <!-- Delete article Confirmation Modal -->
+                      <DialogModal
+                        :show="deletinguser"
+                        @close="toggledeleteArticle()"
+                      >
+                        <template #title> Delete {{ user.username }} </template>
+
+                        <template #content>
+                          Deleting this user will remove their account and any
+                          related content like threads & replies. This cannot be
+                          undone.
+                        </template>
+
+                        <template #footer>
+                          <button
+                            @click="toggledeletinguser()"
+                            class="
+                              inline-flex
+                              items-center
+                              px-4
+                              py-2
+                              bg-white
+                              border border-gray-300
+                              rounded-md
+                              font-semibold
+                              text-xs text-gray-700
+                              uppercase
+                              tracking-widest
+                              shadow-sm
+                              hover:text-gray-500
+                              focus:outline-none
+                              focus:border-blue-300
+                              focus:ring
+                              focus:ring-blue-200
+                              active:text-gray-800 active:bg-gray-50
+                              disabled:opacity-25
+                              transition
+                            "
+                          >
+                            Cancel
+                          </button>
+
+                          <Link
+                            :href="route('admin.users.delete', user.username)"
+                            method="delete"
+                            class="
+                              inline-flex
+                              items-center
+                              justify-center
+                              px-4
+                              py-2
+                              bg-red-600
+                              border border-transparent
+                              rounded-md
+                              font-semibold
+                              text-xs text-white
+                              uppercase
+                              tracking-widest
+                              hover:bg-red-500
+                              focus:outline-none
+                              focus:border-red-700
+                              focus:ring
+                              focus:ring-red-200
+                              active:bg-red-600
+                              disabled:opacity-25
+                              transition
+                              ml-3
+                            "
+                          >
+                            Delete User
+                          </Link>
+                        </template>
+                      </DialogModal>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-4"><Pagination class="mt-6" :links="users.links" /></div>
+    </main>
+  </AdminLayout>
+</template>
+        

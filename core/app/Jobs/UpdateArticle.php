@@ -1,0 +1,67 @@
+<?php
+
+namespace App\Jobs;
+
+use App\Events\ArticleWasSubmittedForApproval;
+use App\Http\Requests\ArticleRequest;
+use App\Models\Article;
+
+final class UpdateArticle
+{
+    private $originalUrl;
+
+    private $tags;
+    private $channels;
+
+    public function __construct(
+        private Article $article,
+        private string $title,
+        private string $body,
+        private bool $shouldBeSubmitted,
+        array $options = []
+    ) {
+        $this->originalUrl = $options['original_url'] ?? null;
+        $this->tags = $options['tags'] ?? [];
+        $this->channels = $options['channels'] ?? [];
+    }
+
+    public static function fromRequest(Article $article, ArticleRequest $request): self
+    {
+        return new static(
+            $article,
+            $request->title(),
+            $request->body(),
+            $request->shouldBeSubmitted(),
+            [
+                'original_url' => $request->originalUrl(),
+                'tags' => $request->tags(),
+                'channels' => $request->channels(),
+            ],
+        );
+    }
+
+    public function handle(): void
+    {
+        $this->article->update([
+            'title' => $this->title,
+            'body' => $this->body,
+            'original_url' => $this->originalUrl,
+            'slug' => $this->title,
+        ]);
+
+        if ($this->shouldUpdateSubmittedAt()) {
+            $this->article->submitted_at = now();
+            $this->article->save();
+
+            event(new ArticleWasSubmittedForApproval($this->article));
+        }
+
+        $this->article->syncTags($this->tags);
+        $this->article->syncChannels($this->channels);
+    }
+
+    private function shouldUpdateSubmittedAt(): bool
+    {
+        return $this->shouldBeSubmitted && $this->article->isNotSubmitted();
+    }
+}

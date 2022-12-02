@@ -1,0 +1,1 @@
+import{useSSRContext as o}from"vue";const r={__name:"SocialShare",__ssrInlineRender:!0,props:["data"],setup(s){return(t,e,u,_)=>{}}},n=r.setup;r.setup=(s,t)=>{const e=o();return(e.modules||(e.modules=new Set)).add("resources/js/Components/Frontend/SocialShare.vue"),n?n(s,t):void 0};export{r as default};

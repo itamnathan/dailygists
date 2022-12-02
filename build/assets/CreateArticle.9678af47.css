@@ -1,0 +1,1 @@
+.saving{animation:pulse-bg 1s infinite}@keyframes pulse-bg{0%{--tw-text-opacity: 1;color:rgb(94 234 212 / var(--tw-text-opacity))}50%{--tw-text-opacity: 1;color:rgb(13 148 136 / var(--tw-text-opacity))}to{--tw-text-opacity: 1;color:rgb(94 234 212 / var(--tw-text-opacity))}}

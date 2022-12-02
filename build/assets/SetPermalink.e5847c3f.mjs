@@ -1,0 +1,1 @@
+import{useSSRContext as u}from"vue";const r={__name:"SetPermalink",__ssrInlineRender:!0,setup(t){return(s,e,o,_)=>{}}},n=r.setup;r.setup=(t,s)=>{const e=u();return(e.modules||(e.modules=new Set)).add("resources/js/Components/SetPermalink.vue"),n?n(t,s):void 0};export{r as default};

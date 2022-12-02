@@ -1,0 +1,1 @@
+import{_ as o}from"./AdminLayout.82c1d6f6.js";import{o as r,j as t}from"./vendor.ab963d2a.js";import"./app.d35bf253.js";import"./useDetictingMobile.ab43061e.js";import"./settings.ba59d097.js";import"./usermenu.5ff42336.js";const f={__name:"Dashboard",setup(a){return(m,p)=>(r(),t(o))}};export{f as default};

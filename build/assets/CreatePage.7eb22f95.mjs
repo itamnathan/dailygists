@@ -1,0 +1,1 @@
+import{useSSRContext as o}from"vue";import{_ as a}from"./_plugin-vue_export-helper.43be4956.mjs";const s={};function u(t,r,e,_){}const n=s.setup;s.setup=(t,r)=>{const e=o();return(e.modules||(e.modules=new Set)).add("resources/js/Pages/Admin/Page/CreatePage.vue"),n?n(t,r):void 0};const f=a(s,[["ssrRender",u]]);export{f as default};
